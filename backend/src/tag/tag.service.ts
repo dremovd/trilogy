@@ -16,10 +16,9 @@ export class TagService {
     return { tags: tags.map((tag) => tag.tag) };
   }
 
-  async handleTags(tagListStr: string): Promise<Tag[]> {
-    const tags = tagListStr.split(',').map((tag) => tag.trim());
+  async handleTags(tagList: string[]): Promise<Tag[]> {
     const handledTags: Tag[] = [];
-    for (const tagStr of tags) {
+    for (const tagStr of tagList) {
       let tagEntity = await this.tagRepository.findOne({ tag: tagStr });
       if (!tagEntity) {
         // Create a new Tag entity and save it
