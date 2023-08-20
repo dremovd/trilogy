@@ -10,6 +10,7 @@ import { provideEffects } from '@ngrx/effects';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { API_URL } from '@realworld/core/http-client';
 import { environment } from '@env/environment';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter([
@@ -24,7 +25,7 @@ export const appConfig: ApplicationConfig = {
       },
       {
         path: 'roster',
-        loadChildren: () => import('./roster/roster.module').then((roster) => roster.RosterModule),
+        loadChildren: () => import('@realworld/roster/feature-roster').then((roster) => roster.RosterModule),
       },      
       {
         path: 'login',
