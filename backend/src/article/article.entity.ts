@@ -50,6 +50,7 @@ export class Article {
 
   toJSON(user?: User) {
     const o = wrap<Article>(this).toObject() as ArticleDTO;
+    
     o.favorited = user && user.favorites.isInitialized() ? user.favorites.contains(this) : false;
     o.author = this.author.toJSON(user);
 

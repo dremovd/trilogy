@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "../../libs/roster/feature-roster/src/lib/index.ts"],
   "compilerOptions": {
     "types": ["jest", "node"]
   },

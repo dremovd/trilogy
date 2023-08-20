@@ -16,7 +16,7 @@
   },
   "include": [
     "src/**/*"
-  ],
+, "src/roster/roster.types.ts"  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
