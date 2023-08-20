@@ -7,7 +7,7 @@ export class RosterController {
   constructor(private readonly rosterService: RosterService) {}
 
   @Get()
-  async getAuthorsRoster(): Promise<AuthorRoster[]> {
+  async getRoster(): Promise<AuthorRoster[]> {
     return this.rosterService.getAuthorsRoster();
   }
 }

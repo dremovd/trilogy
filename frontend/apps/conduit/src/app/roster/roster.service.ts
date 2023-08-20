@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { AuthorRoster } from './roster.types';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class RosterService {
-  constructor(private readonly http: HttpClient) {}
+  private readonly apiUrl = '/api/roster';
 
-  getAuthorsRoster() {
-    return this.http.get('/api/roster');
+  constructor(private readonly httpClient: HttpClient) {}
+
+  getRoster(): Observable<AuthorRoster[]> { // Use AuthorRoster type here
+    return this.httpClient.get<AuthorRoster[]>(this.apiUrl);
   }
 }
