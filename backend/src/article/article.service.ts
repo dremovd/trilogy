@@ -118,6 +118,8 @@ export class ArticleService {
     const article = await this.articleRepository.findOneOrFail({ slug }, { populate: ['author'] });
     const user = await this.userRepository.findOneOrFail(id, { populate: ['favorites', 'followers'] });
 
+    await user.favorites.init();
+
     if (!user.favorites.contains(article)) {
       user.favorites.add(article);
       article.favoritesCount++;
@@ -130,6 +132,8 @@ export class ArticleService {
   async unFavorite(id: number, slug: string): Promise<IArticleRO> {
     const article = await this.articleRepository.findOneOrFail({ slug }, { populate: ['author'] });
     const user = await this.userRepository.findOneOrFail(id, { populate: ['followers', 'favorites'] });
+
+    await user.favorites.init();
 
     if (user.favorites.contains(article)) {
       user.favorites.remove(article);
