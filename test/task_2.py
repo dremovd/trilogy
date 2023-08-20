@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.action_chains import ActionChains
 
 import unittest
 import time
@@ -17,54 +18,79 @@ LOAD_TIME = 3  # seconds
 
 class TestConduitRoster(unittest.TestCase):
     def setUp(self):
-        self.driver = webdriver.Chrome()
-        self.driver.get('http://localhost:4200/')
-        self.driver.maximize_window()
+        self.browser = webdriver.Chrome()
+        self.browser.get('http://localhost:4200/')
+        time.sleep(LOAD_TIME)  # Allow the page to load
 
     def tearDown(self):
-        self.driver.quit()
+        self.browser.quit()
 
-    def login(self, email, password):
-        self.driver.get('http://localhost:4200/login')
+    def login(self, username, password):
+        # Navigate to the login page
+        login_link = self.browser.find_element(By.LINK_TEXT, 'Sign in')
+        login_link.click()
+        time.sleep(LOAD_TIME)  # Allow navigation to login page
 
-        email_field = self.driver.find_element(By.CSS_SELECTOR, 'input[formcontrolname=email]')
-        email_field.send_keys(email)
+        # Click and type username
+        username_field = self.browser.find_element(By.XPATH, '//input[@placeholder="Username"]')
+        ActionChains(self.browser).click(username_field).pause(2).send_keys(username).perform()
 
-        password_field = self.driver.find_element(By.CSS_SELECTOR, 'input[formcontrolname=password]')
-        password_field.send_keys(password)
+        # Click and type password
+        password_field = self.browser.find_element(By.XPATH, '//input[@placeholder="Password"]')
+        ActionChains(self.browser).click(password_field).pause(2).send_keys(password).perform()
+        time.sleep(2)  # Allow login to complete
 
-        sign_in_button = self.driver.find_element(By.XPATH, '//button[text()="Sign in"]')
-        sign_in_button.click()
+        # Click login button
+        login_button = self.browser.find_element(By.XPATH, '//button[@data-e2e-id="sign-in"]')
+        login_button.click()
+        time.sleep(LOAD_TIME)  # Allow login to complete
 
-        # Wait for login to complete
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, '//a[text()="Settings"]'))
-        )
+    def create_post(self, title='Sample Article', description='This is a sample article.', body='The body of the sample article.', tags='coding, testing'):
+        new_post_button = self.browser.find_element(By.XPATH, '//a[@href="/editor"]')
+        new_post_button.click()
+        time.sleep(LOAD_TIME)  # Allow navigation to new article page
+
+        # Fill in the article details
+        title_field = self.browser.find_element(By.XPATH, '//input[@placeholder="Article Title"]')
+        title_field.send_keys(title)
+        description_field = self.browser.find_element(By.XPATH, '//input[@placeholder="What\'s this article about?"]')
+        description_field.send_keys(description)
+        body_field = self.browser.find_element(By.XPATH, '//textarea[@placeholder="Write your article (in markdown)"]')
+        body_field.send_keys(body)
+        tags_field = self.browser.find_element(By.XPATH, '//input[@placeholder="Enter Tags"]')
+        tags_field.send_keys(tags)
+        time.sleep(LOAD_TIME)  # Allow article submission to complete
+
+        # Submit the article
+        submit_button = self.browser.find_element(By.XPATH, '//button[contains(text(),"Publish Article")]')
+        submit_button.click()
+        time.sleep(LOAD_TIME)  # Allow article submission to complete
+
 
     def get_author_articles_count(self, username):
         # Navigate to the Roster page
-        self.driver.find_element(By.LINK_TEXT, 'Roster').click()
+        self.browser.find_element(By.LINK_TEXT, 'Roster').click()
 
         # Wait for the Roster page to load
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.browser, LOAD_TIME).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'page-title'))
         )
 
         # Find the row corresponding to the author
-        author_row = self.driver.find_element(By.XPATH, f"//table/tbody/tr[td/a[text()='{username}']]")
+        author_row = self.browser.find_element(By.XPATH, f"//table/tbody/tr[td/a[text()='{username}']]")
 
         # Extract the total number of articles
         return int(author_row.find_element(By.XPATH, './/td[2]').text)
 
     def test_roster_page_not_logged_in(self):
-        driver = self.driver
+        driver = self.browser
 
         # Navigate to the Roster page
         roster_link = driver.find_element(By.LINK_TEXT, 'Roster')
         roster_link.click()
 
         # Wait for the Roster page to load
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, LOAD_TIME).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'page-title'))
         )
 
@@ -84,7 +110,7 @@ class TestConduitRoster(unittest.TestCase):
         self.assertEqual(sorted(likes, reverse=True), likes)
 
     def test_roster_page_new_article(self):
-        driver = self.driver
+        driver = self.browser
 
         # Log in with valid credentials
         self.login(test_user_data['username'], test_user_data['password'])
@@ -103,7 +129,7 @@ class TestConduitRoster(unittest.TestCase):
         driver.find_element(By.XPATH, '//button[text()="Publish Article"]').click()
 
         # Verify that the article was published
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, LOAD_TIME).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'article-page'))
         )
 
@@ -115,30 +141,30 @@ class TestConduitRoster(unittest.TestCase):
 
     def get_author_likes_count(self, username):
         # Navigate to the Roster page
-        self.driver.find_element(By.LINK_TEXT, 'Roster').click()
+        self.browser.find_element(By.LINK_TEXT, 'Roster').click()
 
         # Wait for the Roster page to load
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.browser, LOAD_TIME).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'page-title'))
         )
 
         # Find the row corresponding to the author
-        author_row = self.driver.find_element(By.XPATH, f"//table/tbody/tr[td/a[text()='{username}']]")
+        author_row = self.browser.find_element(By.XPATH, f"//table/tbody/tr[td/a[text()='{username}']]")
 
         # Extract the total number of likes
         return int(author_row.find_element(By.XPATH, './/td[3]').text)
 
     def test_roster_page_like_article(self):
-        driver = self.driver
+        driver = self.browser
 
         # Log in with valid credentials
-        self.login('valid_user@email.com', 'valid_password')
+        self.login(test_user_data['username'], test_user_data['password'])
 
         # Navigate to an article page (replace with the URL of an article that the user can like)
-        driver.get('http://localhost:4200/article/test-article-slug')
+        driver.get('http://localhost:4200/article/how-to-do-something')
 
         # Wait for the article page to load
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, LOAD_TIME).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'article-page'))
         )
 

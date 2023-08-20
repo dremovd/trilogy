@@ -20,8 +20,7 @@ class TestCreateArticleWithTags(unittest.TestCase):
         self.browser.get('http://localhost:4200/')
         time.sleep(LOAD_TIME)  # Allow the page to load
 
-    def test_create_article_with_tags(self):
-        # Login
+    def login(self, username, password):
         # Navigate to the login page
         login_link = self.browser.find_element(By.LINK_TEXT, 'Sign in')
         login_link.click()
@@ -29,11 +28,11 @@ class TestCreateArticleWithTags(unittest.TestCase):
 
         # Click and type username
         username_field = self.browser.find_element(By.XPATH, '//input[@placeholder="Username"]')
-        ActionChains(self.browser).click(username_field).pause(2).send_keys(test_user_data['username']).perform()
+        ActionChains(self.browser).click(username_field).pause(2).send_keys(username).perform()
 
         # Click and type password
         password_field = self.browser.find_element(By.XPATH, '//input[@placeholder="Password"]')
-        ActionChains(self.browser).click(password_field).pause(2).send_keys(test_user_data['password']).perform()
+        ActionChains(self.browser).click(password_field).pause(2).send_keys(password).perform()
         time.sleep(2)  # Allow login to complete
 
         # Click login button
@@ -41,27 +40,34 @@ class TestCreateArticleWithTags(unittest.TestCase):
         login_button.click()
         time.sleep(LOAD_TIME)  # Allow login to complete
 
-        # Navigate to the page to create a new article
+    def create_post(self, title='Sample Article', description='This is a sample article.', body='The body of the sample article.', tags='coding, testing'):
         new_post_button = self.browser.find_element(By.XPATH, '//a[@href="/editor"]')
         new_post_button.click()
         time.sleep(LOAD_TIME)  # Allow navigation to new article page
 
         # Fill in the article details
         title_field = self.browser.find_element(By.XPATH, '//input[@placeholder="Article Title"]')
-        title_field.send_keys('Sample Article')
+        title_field.send_keys(title)
         description_field = self.browser.find_element(By.XPATH, '//input[@placeholder="What\'s this article about?"]')
-        description_field.send_keys('This is a sample article.')
+        description_field.send_keys(description)
         body_field = self.browser.find_element(By.XPATH, '//textarea[@placeholder="Write your article (in markdown)"]')
-        body_field.send_keys('The body of the sample article.')
+        body_field.send_keys(body)
         tags_field = self.browser.find_element(By.XPATH, '//input[@placeholder="Enter Tags"]')
-        tags_field.send_keys('coding, testing')
+        tags_field.send_keys(tags)
         time.sleep(LOAD_TIME)  # Allow article submission to complete
 
         # Submit the article
         submit_button = self.browser.find_element(By.XPATH, '//button[contains(text(),"Publish Article")]')
         submit_button.click()
         time.sleep(LOAD_TIME)  # Allow article submission to complete
-        
+
+    def test_create_article_with_tags(self):
+        # Login
+        self.login(test_user_data['username'], test_user_data['password'])
+
+        # Navigate to the page to create a new article
+        self.create_post()
+
         self.browser.get('http://localhost:4200/')
         time.sleep(LOAD_TIME)
         
