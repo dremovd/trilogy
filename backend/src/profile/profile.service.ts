@@ -31,21 +31,24 @@ export class ProfileService {
       populate: ['followers'],
     });
     const follower = this.userRepository.getReference(id);
-
+  
     if (!foundProfile) {
       return;
     }
-
+  
+    // Check if the followers collection is initialized
+    const isFollowersInitialized = foundProfile.followers.isInitialized();
+  
     const profile: IProfileData = {
       bio: foundProfile.bio,
       image: foundProfile.image,
       username: foundProfile.username,
-      following: foundProfile.followers.contains(follower),
+      following: isFollowersInitialized ? foundProfile.followers.contains(follower) : false,
     };
-
+  
     return { profile };
   }
-
+  
   async follow(followerEmail: string, username: string): Promise<IProfileRO> {
     if (!followerEmail || !username) {
       throw new HttpException('Follower email and username not provided.', HttpStatus.BAD_REQUEST);
