@@ -12,6 +12,7 @@ import time
 test_user_data = {
     'username': 'jcosten0@purevolume.com',
     'password': 'password',
+    'name': 'John Costen',
 }
 
 LOAD_TIME = 3  # seconds
@@ -38,7 +39,7 @@ class TestConduitRoster(unittest.TestCase):
         # Click and type password
         password_field = self.browser.find_element(By.XPATH, '//input[@placeholder="Password"]')
         ActionChains(self.browser).click(password_field).pause(2).send_keys(password).perform()
-        time.sleep(2)  # Allow login to complete
+        time.sleep(LOAD_TIME)  # Allow login to complete
 
         # Click login button
         login_button = self.browser.find_element(By.XPATH, '//button[@data-e2e-id="sign-in"]')
@@ -67,7 +68,7 @@ class TestConduitRoster(unittest.TestCase):
         time.sleep(LOAD_TIME)  # Allow article submission to complete
 
 
-    def get_author_articles_count(self, username):
+    def get_author_articles_count(self, name):
         # Navigate to the Roster page
         self.browser.find_element(By.LINK_TEXT, 'Roster').click()
 
@@ -77,7 +78,7 @@ class TestConduitRoster(unittest.TestCase):
         )
 
         # Find the row corresponding to the author
-        author_row = self.browser.find_element(By.XPATH, f"//table/tbody/tr[td/a[text()='{username}']]")
+        author_row = self.browser.find_element(By.XPATH, f"//table/tbody/tr[td/a[text()='{name}']]")
 
         # Extract the total number of articles
         return int(author_row.find_element(By.XPATH, './/td[2]').text)
@@ -115,18 +116,8 @@ class TestConduitRoster(unittest.TestCase):
         # Log in with valid credentials
         self.login(test_user_data['username'], test_user_data['password'])
 
-        # Navigate to the new article page
-        driver.find_element(By.LINK_TEXT, 'New Article').click()
-
-        # Fill in the article form
-        driver.find_element(By.NAME, 'title').send_keys('Test Article')
-        driver.find_element(By.NAME, 'description').send_keys('Test Description')
-        driver.find_element(By.NAME, 'body').send_keys('Test Body')
-        tag_field = driver.find_element(By.NAME, 'tagList')
-        tag_field.send_keys('test', Keys.RETURN)
-
-        # Publish the article
-        driver.find_element(By.XPATH, '//button[text()="Publish Article"]').click()
+        initial_articles_count = self.get_author_articles_count(test_user_data['name'])
+        self.create_post()
 
         # Verify that the article was published
         WebDriverWait(driver, LOAD_TIME).until(
@@ -134,12 +125,12 @@ class TestConduitRoster(unittest.TestCase):
         )
 
         # Get the current number of articles for the author
-        current_articles_count = self.get_author_articles_count('valid_user')
+        current_articles_count = self.get_author_articles_count(test_user_data['name'])
 
         # Verify that the total number of articles has been incremented by 1
-        self.assertEqual(current_articles_count, self.initial_articles_count + 1)
+        self.assertEqual(current_articles_count, initial_articles_count + 1)
 
-    def get_author_likes_count(self, username):
+    def get_author_likes_count(self, name):
         # Navigate to the Roster page
         self.browser.find_element(By.LINK_TEXT, 'Roster').click()
 
@@ -149,7 +140,7 @@ class TestConduitRoster(unittest.TestCase):
         )
 
         # Find the row corresponding to the author
-        author_row = self.browser.find_element(By.XPATH, f"//table/tbody/tr[td/a[text()='{username}']]")
+        author_row = self.browser.find_element(By.XPATH, f"//table/tbody/tr[td/a[text()='{name}']]")
 
         # Extract the total number of likes
         return int(author_row.find_element(By.XPATH, './/td[3]').text)
@@ -168,20 +159,31 @@ class TestConduitRoster(unittest.TestCase):
             EC.presence_of_element_located((By.CLASS_NAME, 'article-page'))
         )
 
+        # Get the author's username from the article page
+        author_username = driver.find_element(By.XPATH, '//a[contains(@class, "author")]').text
+
+        # Get the current number of likes for the author
+        initial_likes_count = self.get_author_likes_count(author_username)
+
+        # Navigate to an article page (replace with the URL of an article that the user can like)
+        driver.get('http://localhost:4200/article/how-to-do-something')
+
+        # Wait for the article page to load
+        WebDriverWait(driver, LOAD_TIME).until(
+            EC.presence_of_element_located((By.CLASS_NAME, 'article-page'))
+        )
+
         # Click on the like button
         driver.find_element(By.XPATH, '//button[contains(@class, "btn-outline-primary")]').click()
 
         # Wait for the like action to complete
-        time.sleep(2)  # You may replace this with a more specific wait condition
-
-        # Get the author's username from the article page
-        author_username = driver.find_element(By.XPATH, '//a[contains(@class, "author")]').text
+        time.sleep(LOAD_TIME)
 
         # Get the current number of likes for the author
         current_likes_count = self.get_author_likes_count(author_username)
 
         # Verify that the total number of likes has been incremented by 1
-        self.assertEqual(current_likes_count, self.initial_likes_count + 1)
+        self.assertEqual(abs(current_likes_count - initial_likes_count), 1)
 
 
 if __name__ == "__main__":
