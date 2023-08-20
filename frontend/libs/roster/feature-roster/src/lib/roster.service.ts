@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { AuthorRoster } from './roster.types';
+import { ApiService } from '@realworld/core/http-client';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RosterService {
-  constructor(private readonly httpClient: HttpClient) {}
+  constructor(private readonly apiService: ApiService) {} // Use ApiService
 
   getRoster(): Observable<AuthorRoster[]> {
-    return this.httpClient.get<AuthorRoster[]>('/api/roster');
+    return this.apiService.get<AuthorRoster[]>('/roster'); // Use the apiService to make the GET request
   }
 }
