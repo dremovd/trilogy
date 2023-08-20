@@ -173,8 +173,16 @@ class TestConduitRoster(unittest.TestCase):
             EC.presence_of_element_located((By.CLASS_NAME, 'article-page'))
         )
 
+        # Full XPath of the like button
+        like_button_xpath = '/html/body/cdt-root/cdt-article/div/div[1]/div/cdt-article-meta/div/span[2]/button[2]'
+
+        # Wait for the like button to be clickable
+        like_button = WebDriverWait(driver, LOAD_TIME).until(
+            EC.element_to_be_clickable((By.XPATH, like_button_xpath))
+        )
+
         # Click on the like button
-        driver.find_element(By.XPATH, '//button[contains(@class, "btn-outline-primary")]').click()
+        like_button.click()
 
         # Wait for the like action to complete
         time.sleep(LOAD_TIME)
