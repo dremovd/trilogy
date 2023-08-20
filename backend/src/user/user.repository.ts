@@ -9,6 +9,7 @@ export class UserRepository {
 
   async getAuthorsRoster(): Promise<AuthorRoster[]> {
     const authors = await this.em.find(User, {});
+    await this.em.populate(authors, ['articles']);
     return authors.map((author) => {
       const totalLikes = author.articles.getItems().reduce((sum, article) => sum + article.favoritesCount, 0);
       return {
