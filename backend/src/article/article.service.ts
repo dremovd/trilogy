@@ -89,6 +89,7 @@ export class ArticleService {
   async findOne(userId: number, where): Promise<IArticleRO> {
     const user = userId ? await this.userRepository.findOneOrFail(userId, { populate: ['followers', 'favorites'] }) : undefined;
     const article = await this.articleRepository.findOne(where, { populate: ['author'] });
+    await user.favorites.init();
     return { article: article && article.toJSON(user) };
   }
 
