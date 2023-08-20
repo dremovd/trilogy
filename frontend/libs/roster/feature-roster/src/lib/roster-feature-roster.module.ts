@@ -1,7 +1,10 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { ROSTER_ROUTES } from './roster.routes';
+import { RosterComponent } from './roster.component';
 
 @NgModule({
-  imports: [CommonModule],
+  imports: [RouterModule.forChild(ROSTER_ROUTES)],
+  declarations: [RosterComponent],
 })
 export class RosterFeatureRosterModule {}

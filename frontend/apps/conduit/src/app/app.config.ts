@@ -25,7 +25,7 @@ export const appConfig: ApplicationConfig = {
       },
       {
         path: 'roster',
-        loadChildren: () => import('@realworld/roster/feature-roster').then((roster) => roster.ROSTER_ROUTES),
+        loadChildren: () => import('@realworld/roster/feature-roster').then((roster) => roster.RosterFeatureRosterModule),
       },      
       {
         path: 'login',
