@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 export class RosterService {
   constructor(private readonly apiService: ApiService) {} // Use ApiService
 
-  getRoster(): Observable<AuthorRoster[]> {
+  getAuthorsRoster(): Observable<AuthorRoster[]> {
     return this.apiService.get<AuthorRoster[]>('/roster'); // Use the apiService to make the GET request
   }
 }

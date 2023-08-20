@@ -1,6 +1,6 @@
-import { Routes } from '@angular/router';
 import { RosterComponent } from './roster.component';
+import { RosterResolver } from './roster-resolver.service';
 
-export const ROSTER_ROUTES: Routes = [
-  { path: '', component: RosterComponent }
+export const ROSTER_ROUTES = [
+  { path: '', component: RosterComponent, resolve: { authors: RosterResolver } }
 ];

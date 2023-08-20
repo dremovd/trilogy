@@ -1,19 +1,19 @@
+// roster.component.ts
 import { Component, OnInit } from '@angular/core';
-import { RosterService } from './roster.service';
+import { ActivatedRoute } from '@angular/router';
 import { AuthorRoster } from './roster.types';
-    
+
 @Component({
   selector: 'app-roster',
   templateUrl: './roster.component.html',
+  styleUrls: ['./roster.component.css'],
 })
 export class RosterComponent implements OnInit {
   authorsRoster: AuthorRoster[] = [];
 
-  constructor(private readonly rosterService: RosterService) {}
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.rosterService.getRoster().subscribe((data: AuthorRoster[]) => {
-      this.authorsRoster = data;
-    });
+    this.authorsRoster = this.route.snapshot.data['authors'];
   }
 }
