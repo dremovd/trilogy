@@ -23,7 +23,6 @@ class TestCreateArticleWithTags(unittest.TestCase):
     def test_create_article_with_tags(self):
         # Login
         # Navigate to the login page
-        # Navigate to the login page
         login_link = self.browser.find_element(By.LINK_TEXT, 'Sign in')
         login_link.click()
         time.sleep(LOAD_TIME)  # Allow navigation to login page
