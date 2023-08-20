@@ -1,0 +1,22 @@
+<div class="container">
+    <h1 class="page-title">Conduit Roster</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>User Name</th>
+            <th>Total Articles</th>
+            <th>Total Likes</th>
+            <th>First Article Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let author of authorsRoster">
+            <td><a [routerLink]="['/profile', author.username]">{{ author.username }}</a></td>
+            <td>{{ author.totalArticles }}</td>
+            <td>{{ author.totalLikes }}</td>
+            <td>{{ author.firstArticleDate || 'N/A' }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+  
